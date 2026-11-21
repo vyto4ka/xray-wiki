@@ -397,6 +397,68 @@ const pagefindUrl = withBase('/pagefind/pagefind.js');
           }
         };
 
+        const glossaryData = (() => {
+          try {
+            const el = document.getElementById('glossary-search-index');
+            return el ? JSON.parse(el.textContent || '[]') : [];
+          } catch {
+            return [];
+          }
+        })();
+
+        const escapeHtml = (s) =>
+          String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+
+        const matchGlossary = (rawQuery) => {
+          const q = rawQuery.toLowerCase().trim();
+          if (!q) return [];
+          const scored = [];
+          for (const g of glossaryData) {
+            const id = (g.id || '').toLowerCase();
+            const title = (g.title || '').toLowerCase();
+            const alt = (g.altTitle || '').toLowerCase();
+            const zh = (g.zh || '').toLowerCase();
+            const short = (g.short || '').toLowerCase();
+
+            let score = 0;
+            if (id === q || title === q || alt === q) score = 100;
+            else if (title.startsWith(q) || id.startsWith(q) || alt.startsWith(q)) score = 80;
+            else if (
+              title.split(/[\s/(),-]+/).some((w) => w === q || (q.length >= 2 && w.startsWith(q))) ||
+              alt.split(/[\s/(),-]+/).some((w) => w === q || (q.length >= 2 && w.startsWith(q)))
+            ) {
+              score = 65;
+            } else if (zh && zh.includes(q)) score = 60;
+            else if (q.length >= 3 && (title.includes(q) || alt.includes(q))) score = 45;
+            else if (q.length >= 4 && short.includes(q)) score = 20;
+
+            if (score > 0) scored.push({ g, score });
+          }
+          scored.sort((a, b) => b.score - a.score);
+          return scored.slice(0, 3).map((x) => x.g);
+        };
+
+        const renderGlossaryHtml = (matches) => {
+          const badge = searchResults?.dataset.defBadge || 'Definition';
+          return matches
+            .map(
+              (g) =>
+                `<a class="search-item search-item--def" href="${escapeHtml(g.href)}">` +
+                `<div class="search-item__title">` +
+                `<span class="search-def-badge">${escapeHtml(badge)}</span>` +
+                `<span>${escapeHtml(g.title)}</span>` +
+                (g.zh ? `<span class="search-def-zh">${escapeHtml(g.zh)}</span>` : '') +
+                `</div>` +
+                `<div class="search-item__excerpt">${escapeHtml(g.short)}</div>` +
+                `</a>`,
+            )
+            .join('');
+        };
+
         let searchTimer = null;
         searchInput?.addEventListener('input', () => {
           if (searchTimer) clearTimeout(searchTimer);
@@ -406,28 +468,34 @@ const pagefindUrl = withBase('/pagefind/pagefind.js');
             searchResults.innerHTML = `<div class="search-state">${searchResults.dataset.hint || ''}</div>`;
             return;
           }
+
+          const defMatches = matchGlossary(q);
+          const defHtml = renderGlossaryHtml(defMatches);
+          if (defHtml) {
+            searchResults.innerHTML = defHtml;
+          }
+
           searchTimer = setTimeout(async () => {
             const pf = await loadPagefind();
             if (!pf) {
-              searchResults.innerHTML = `<div class="search-state">${searchResults.dataset.unavailable || ''}</div>`;
+              if (!defHtml) {
+                searchResults.innerHTML = `<div class="search-state">${searchResults.dataset.unavailable || ''}</div>`;
+              }
               return;
             }
             const res = await pf.search(q);
             const items = await Promise.all(res.results.slice(0, 10).map((r) => r.data()));
-            if (items.length === 0) {
+            if (items.length === 0 && !defHtml) {
               searchResults.innerHTML = `<div class="search-state">${searchResults.dataset.empty || ''}</div>`;
               return;
             }
-            searchResults.innerHTML = items
+            const pfHtml = items
               .map((item) => {
                 const title = item.meta?.title || item.url;
                 const subs = (item.sub_results || [])
                   .filter((s) => s.title && s.url !== item.url)
                   .slice(0, 3)
-                  .map(
-                    (s) =>
-                      `<a class="search-sub" href="${s.url}"># ${s.title}</a>`,
-                  )
+                  .map((s) => `<a class="search-sub" href="${s.url}"># ${s.title}</a>`)
                   .join('');
                 return (
                   `<div class="search-item">` +
@@ -440,7 +508,8 @@ const pagefindUrl = withBase('/pagefind/pagefind.js');
                 );
               })
               .join('');
-          }, 140);
+            searchResults.innerHTML = defHtml + pfHtml;
+          }, 120);
         });
       })();
     </script>

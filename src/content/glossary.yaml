@@ -398,3 +398,134 @@ terms:
     en:
       title: SOCKS5
       short: Local proxy protocol used by applications to forward TCP and UDP traffic into Xray-core without encryption.
+
+  multiplexing:
+    zh: 多路复用
+    path: /fundamentals/glossary/#multiplexing
+    ru:
+      title: Мультиплексирование (Mux / XMUX)
+      short: Передача множества независимых запросов и соединений внутри одного общего TCP- или QUIC-канала для экономии рукопожатий и снижения задержки.
+    en:
+      title: Multiplexing (Mux / XMUX)
+      short: Carrying multiple independent streams inside a single shared TCP or QUIC connection to avoid repeated handshakes.
+
+  padding:
+    zh: 填充混淆
+    path: /fundamentals/glossary/#padding
+    ru:
+      title: Паддинг (Padding)
+      short: Добавление случайного объёма служебных «пустых» байтов к пакетам и заголовкам, чтобы скрыть их характерную длину от систем DPI.
+    en:
+      title: Padding
+      short: Appending random dummy bytes to packets or headers to hide distinctive message lengths from DPI.
+
+  obfuscation:
+    zh: 流量混淆
+    path: /fundamentals/glossary/#obfuscation
+    ru:
+      title: Обфускация (маскировка трафика)
+      short: Изменение внешнего вида сетевых пакетов так, чтобы они напоминали обычный HTTPS, HTTP/3, DNS или нейтральный трафик и не выдавали прокси.
+    en:
+      title: Obfuscation
+      short: Transforming traffic appearance so packets blend into ordinary HTTPS, HTTP/3, DNS, or benign protocols instead of exposing proxy patterns.
+
+  handshake:
+    zh: 握手过程
+    path: /fundamentals/glossary/#handshake
+    ru:
+      title: Рукопожатие (Handshake)
+      short: Начальный обмен служебными сообщениями между клиентом и сервером для установки соединения, проверки подлинности и выработки общих ключей.
+    en:
+      title: Handshake
+      short: Initial exchange of control messages between client and server to establish a connection, authenticate, and negotiate session keys.
+
+  sniffing:
+    zh: 流量探测
+    path: /fundamentals/glossary/#sniffing
+    ru:
+      title: Сниффинг (Sniffing)
+      short: Чтение первых байтов входящего соединения в Xray для восстановления настоящего доменного имени из TLS SNI, HTTP Host или FakeDNS.
+    en:
+      title: Sniffing
+      short: Inspecting the initial bytes of an inbound connection in Xray to recover the target domain from TLS SNI, HTTP Host, or FakeDNS.
+
+  fallback:
+    zh: 回落机制
+    path: /fundamentals/glossary/#fallback
+    ru:
+      title: Фоллбэк (Fallback / откат)
+      short: Автоматическое перенаправление неавторизованных или неподходящих подключений на настоящий веб-сайт или резервный узел.
+    en:
+      title: Fallback
+      short: Automatically redirecting unauthenticated or unmatched connections to a real website or backup server.
+
+  fragmentation:
+    zh: 分片传输
+    path: /fundamentals/glossary/#fragmentation
+    ru:
+      title: Фрагментация (Fragment)
+      short: Намеренное дробление первого пакета (обычно TLS ClientHello) на мелкие части со случайной паузой, чтобы сбить простой анализ SNI.
+    en:
+      title: Fragmentation
+      short: Splitting an initial packet (typically TLS ClientHello) into small chunks with slight delays to evade simple SNI inspection.
+
+  entropy:
+    zh: 信息熵特征
+    path: /fundamentals/glossary/#entropy
+    ru:
+      title: Энтропия трафика
+      short: Мера статистической случайности байтов в потоке. Чисто случайный «белый шум» без обёртки TLS легко выделяется на фоне обычных протоколов.
+    en:
+      title: Traffic Entropy
+      short: Statistical randomness of payload bytes. Raw high-entropy streams without a TLS wrapper stand out against structured web traffic.
+
+  domain-fronting:
+    zh: 域前置
+    path: /fundamentals/glossary/#domain-fronting
+    ru:
+      title: Доменный фронтинг (Domain Fronting)
+      short: Приём, при котором во внешнем открытом TLS SNI указывается один домен CDN, а внутри зашифрованного HTTP-заголовка Host — другой.
+    en:
+      title: Domain Fronting
+      short: Technique using one CDN domain in the plaintext TLS SNI and a different domain inside the encrypted HTTP Host header.
+
+  mitm:
+    zh: 中间人攻击
+    path: /fundamentals/glossary/#mitm
+    ru:
+      title: MITM (человек посередине)
+      short: Атака, при которой посредник в сети перехватывает и пытается подменить соединение между клиентом и сервером.
+    en:
+      title: MITM (Man-in-the-Middle)
+      short: Attack where an active network intermediary intercepts and attempts to alter or forge traffic between client and server.
+
+  keepalive:
+    zh: 心跳保活
+    path: /fundamentals/glossary/#keepalive
+    ru:
+      title: Keep-Alive (поддержание соединения)
+      short: Периодическая отправка коротких проверочных пакетов в простаивающем канале, чтобы роутер, NAT или CDN не закрыли соединение по таймауту.
+    en:
+      title: Keep-Alive
+      short: Periodic lightweight probes sent over an idle connection so routers, NAT tables, or CDNs do not drop it prematurely.
+
+  stateless:
+    zh: 无状态协议
+    path: /fundamentals/glossary/#stateless
+    ru:
+      title: Протокол без состояния (Stateless)
+      short: Архитектура, при которой каждый запрос или соединение несёт всю нужную информацию для авторизации и не требует синхронизации сессий.
+    en:
+      title: Stateless Protocol
+      short: Protocol design where each connection carries all required authentication metadata without relying on shared session state.
+
+  cascade:
+    zh: 链式代理
+    path: /fundamentals/glossary/#cascade
+    ru:
+      title: Каскад / цепочка прокси (dialerProxy)
+      short: Схема, при которой трафик последовательно проходит через два и более прокси-сервера (например, локальный мост → зарубежный сервер).
+    en:
+      title: Proxy Chain (dialerProxy)
+      short: Routing traffic sequentially through two or more proxy hops (for example, an entry relay followed by an exit node).
+

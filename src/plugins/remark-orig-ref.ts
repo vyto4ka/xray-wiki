@@ -45,7 +45,7 @@ function buildOrigHtml(
 
 function parseAttrs(raw: string): Record<string, string> {
   const attrs: Record<string, string> = {};
-  const attrRe = /([a-zA-Z0-9_-]+)\s*=\s*"([^"]*)"/g;
+  const attrRe = /([a-zA-Z0-9_-]+)\s*=\s*["“”]([^"“”]*)["“”]/g;
   let m: RegExpExecArray | null;
   while ((m = attrRe.exec(raw)) !== null) {
     attrs[m[1]] = m[2];
@@ -72,31 +72,90 @@ export function remarkOrigRef() {
 
     for (let i = 0; i < children.length; i++) {
       const node = children[i];
-      if (node.type === 'paragraph' && node.children.length === 1 && node.children[0].type === 'text') {
-        const startMatch = node.children[0].value.trim().match(EXPLAIN_START_RE);
+      if (node.type === 'paragraph' && node.children.length > 0 && node.children[0].type === 'text') {
+        const firstText = node.children[0].value;
+        const nl = firstText.indexOf('\n');
+        const firstLine = (nl === -1 ? firstText : firstText.slice(0, nl)).trim();
+        const startMatch = firstLine.match(EXPLAIN_START_RE);
+
         if (startMatch) {
           const attrs = parseAttrs(startMatch[1]);
-          let endIdx = -1;
-          for (let j = i + 1; j < children.length; j++) {
-            const candidate = children[j];
-            if (
-              candidate.type === 'paragraph' &&
-              candidate.children.length === 1 &&
-              candidate.children[0].type === 'text' &&
-              candidate.children[0].value.trim() === ':::'
-            ) {
-              endIdx = j;
-              break;
-            }
-          }
-          if (endIdx !== -1) {
-            const badgeHtml = buildOrigHtml(attrs.ref || '', attrs.zh || '', rawSource, origPath, lang, 'orig-ref--block');
+          const badgeHtml = buildOrigHtml(attrs.ref || '', attrs.zh || '', rawSource, origPath, lang, 'orig-ref--block');
+          const restFirst = nl === -1 ? '' : firstText.slice(nl + 1);
+          const cloned: PhrasingContent[] = node.children.map((c) => ({ ...c }) as PhrasingContent);
+          (cloned[0] as Text).value = restFirst;
+          const firstPara: Paragraph = { type: 'paragraph', children: cloned };
+
+          const lastChild = cloned[cloned.length - 1];
+          if (lastChild?.type === 'text' && /\r?\n:::\s*$/.test(lastChild.value)) {
+            lastChild.value = lastChild.value.replace(/\r?\n:::\s*$/, '').trimEnd();
             nextChildren.push({
               type: 'html',
               value: `<div class="explain-box">${badgeHtml}<div class="explain-box__body">`,
             } as Html);
+            nextChildren.push(firstPara);
+            nextChildren.push({ type: 'html', value: `</div></div>` } as Html);
+            continue;
+          }
+
+          let endIdx = -1;
+          let closingKind: 'standalone' | 'inline-para' | 'inline-list' = 'standalone';
+          for (let j = i + 1; j < children.length; j++) {
+            const candidate = children[j];
+            if (candidate.type === 'paragraph') {
+              if (
+                candidate.children.length === 1 &&
+                candidate.children[0].type === 'text' &&
+                candidate.children[0].value.trim() === ':::'
+              ) {
+                endIdx = j;
+                closingKind = 'standalone';
+                break;
+              }
+              const candLast = candidate.children[candidate.children.length - 1];
+              if (candLast?.type === 'text' && /\r?\n:::\s*$/.test(candLast.value)) {
+                endIdx = j;
+                closingKind = 'inline-para';
+                break;
+              }
+            } else if (candidate.type === 'list' && candidate.children.length > 0) {
+              const lastLi = candidate.children[candidate.children.length - 1];
+              const lastBlock = lastLi.children[lastLi.children.length - 1];
+              if (lastBlock?.type === 'paragraph' && lastBlock.children.length > 0) {
+                const lastText = lastBlock.children[lastBlock.children.length - 1];
+                if (lastText?.type === 'text' && /\r?\n:::\s*$/.test(lastText.value)) {
+                  endIdx = j;
+                  closingKind = 'inline-list';
+                  break;
+                }
+              }
+            }
+          }
+          if (endIdx !== -1) {
+            nextChildren.push({
+              type: 'html',
+              value: `<div class="explain-box">${badgeHtml}<div class="explain-box__body">`,
+            } as Html);
+            if (restFirst.trim() || cloned.length > 1) {
+              nextChildren.push(firstPara);
+            }
             for (let k = i + 1; k < endIdx; k++) {
               nextChildren.push(children[k]);
+            }
+            if (closingKind === 'inline-para') {
+              const endPara = children[endIdx] as Paragraph;
+              const endLast = endPara.children[endPara.children.length - 1] as Text;
+              endLast.value = endLast.value.replace(/\r?\n:::\s*$/, '').trimEnd();
+              nextChildren.push(endPara);
+            } else if (closingKind === 'inline-list') {
+              const endList = children[endIdx];
+              if (endList.type === 'list') {
+                const lastLi = endList.children[endList.children.length - 1];
+                const lastBlock = lastLi.children[lastLi.children.length - 1] as Paragraph;
+                const lastText = lastBlock.children[lastBlock.children.length - 1] as Text;
+                lastText.value = lastText.value.replace(/\r?\n:::\s*$/, '').trimEnd();
+              }
+              nextChildren.push(endList);
             }
             nextChildren.push({
               type: 'html',

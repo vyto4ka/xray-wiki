@@ -946,7 +946,25 @@ html[data-orig-mode="expanded"] .explain-box { padding-top: 34px; padding-right:
   background: var(--container-high);
   text-decoration: none;
 }
-.search-item__title { font-weight: 600; font-size: 14px; color: var(--on-surface); margin-bottom: 3px; }
+.search-item__title { font-weight: 600; font-size: 14px; color: var(--on-surface); margin-bottom: 3px; display: flex; align-items: center; gap: 8px; }
+.search-item--def {
+  border-color: color-mix(in srgb, var(--primary) 34%, transparent);
+  background: color-mix(in srgb, var(--primary) 7%, var(--container-low));
+}
+.search-def-badge {
+  font: 600 10.5px/1 var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: var(--miku-soft);
+  color: var(--primary);
+}
+.search-def-zh {
+  margin-left: auto;
+  font: 400 11.5px/1 var(--sans);
+  color: var(--muted);
+}
 .search-item__excerpt { font-size: 12.8px; color: var(--subtext); line-height: 1.45; }
 .search-item__excerpt mark { background: var(--miku-soft); color: var(--primary); border-radius: 3px; padding: 0 2px; }
 .search-subs { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; padding-left: 10px; border-left: 2px solid var(--outline-variant); }

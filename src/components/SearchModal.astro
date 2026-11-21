@@ -1,6 +1,8 @@
 ---
 import Icon from './Icon.astro';
 import { t, type Lang } from '../i18n/ui';
+import { getGlossaryList, termHref } from '../lib/glossary';
+import { getBasePath } from '../lib/paths';
 
 interface Props {
   lang: Lang;
@@ -8,6 +10,16 @@ interface Props {
 
 const { lang } = Astro.props;
 const ui = t(lang);
+const basePath = getBasePath();
+
+const glossaryIndex = getGlossaryList().map((entry) => ({
+  id: entry.id,
+  title: entry[lang].title,
+  short: entry[lang].short,
+  altTitle: entry[lang === 'ru' ? 'en' : 'ru'].title,
+  zh: entry.zh || '',
+  href: termHref(entry, lang, basePath),
+}));
 ---
 
 <div class="modal-back" id="search-modal" hidden role="dialog" aria-modal="true" aria-label={ui.searchButton}>
@@ -29,8 +41,11 @@ const ui = t(lang);
       data-hint={ui.searchHint}
       data-empty={ui.searchEmpty}
       data-unavailable={ui.searchUnavailable}
+      data-def-badge={ui.searchDefinitionBadge}
     >
       <div class="search-state">{ui.searchHint}</div>
     </div>
   </div>
 </div>
+
+<script type="application/json" id="glossary-search-index" set:html={JSON.stringify(glossaryIndex)}></script>

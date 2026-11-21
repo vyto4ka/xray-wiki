@@ -1,6 +1,6 @@
 ---
 title: "XHTTP: Beyond REALITY"
-description: "Full reference for Xray's native HTTP transport: auto/packet-up/stream-up/stream-one modes, XMUX multiplexing, uplink/downlink split, and extra fields."
+description: "Full reference for Xray's native HTTP transport: auto/packet-up/stream-up/stream-one modes, XMUX multiplexing, uplink/downlink split, and every extra parameter."
 order: 2
 badge: new
 origSource: xhttp
@@ -27,12 +27,37 @@ Top-level fields are `host` (priority `host > serverName > address`), `path`, `m
 
 ## XMUX Multiplexer (`extra.xmux`) {#xmux} :orig[~:XMUX | XMUX 多路复用]
 
-Controls 0-RTT connection reuse and rotation on H2/H3: `maxConcurrency` (default `"16-32"`), `maxConnections`, `cMaxReuseTimes`, `hMaxRequestTimes` (`"600-900"`), `hMaxReusableSecs` (`"1800-3000"`), and `hKeepAlivePeriod`. Setting any single field disables the automatic defaults for the remaining fields.
+Controls 0-RTT :term[multiplexing] and rotation on H2/H3: `maxConcurrency` (default `"16-32"`), `maxConnections`, `cMaxReuseTimes`, `hMaxRequestTimes` (`"600-900"`), `hMaxReusableSecs` (`"1800-3000"`), and `hKeepAlivePeriod` (single integer, no range allowed). Setting any single field disables the automatic defaults for the remaining fields.
 
 ## Uplink / Downlink Separation (`downloadSettings`) {#uplink-downlink-split} :orig[~:上下行分离 | 上下行分离]
 
-`extra.downloadSettings` is a complete independent `streamSettings` object plus `address` and `port` (same `path`, `network: "xhttp"`). You can send uplink over IPv4 TCP H2 and receive downlink over IPv6 QUIC H3, or split traffic across two CDNs / REALITY entry servers.
+`extra.downloadSettings` is a complete independent `streamSettings` object plus `address` and `port` (same `path`, `network: "xhttp"`). You can send uplink over IPv4 TCP H2 and receive downlink over IPv6 QUIC H3, or split traffic across two CDNs / REALITY entry servers. Set `sockopt.penetrate: true` on uplink to inherit socket options (such as `mark`) on downlink.
 
-## Advanced `extra` & `config.proto` Fields {#xhttp-extra-fields} :orig[xhttpProto: | splithttp/config.proto]
+## Detailed `extra` & `config.proto` Parameters {#xhttp-extra-fields} :orig[xhttpProto: | splithttp/config.proto]
 
-Includes buffering controls (`scMaxEachPostBytes`, `scMinPostsIntervalMs`, `scMaxBufferedPosts`, `scStreamUpServerSecs`), header toggles (`headers`, `noGRPCHeader`, `noSSEHeader`), flexible padding (`xPaddingBytes`, `xPaddingPlacement`, `xPaddingMethod`), and custom metadata placement (`sessionIDPlacement`, `seqPlacement`, `uplinkDataPlacement`).
+### Buffering & Timing (`packet-up` / `stream-up`) {#xhttp-buffering}
+
+- `scMaxEachPostBytes` (`1000000`), `scMinPostsIntervalMs` (`30`, client), `scMaxBufferedPosts` (`30`, server), `scStreamUpServerSecs` (`"20-80"`, server), `uplinkChunkSize`, `serverMaxHeaderBytes`.
+
+### Headers & Proxy Compatibility {#xhttp-headers}
+
+- `headers`, `noGRPCHeader` (client, keep `false` for Cloudflare/Nginx `grpc_pass`), `noSSEHeader` (server, keep `false` to prevent response buffering), `uplinkHTTPMethod`, `h2Params`.
+
+### Flexible Padding (`xPadding*`) {#xhttp-padding}
+
+- `xPaddingBytes` (`"100-1000"`), `xPaddingObfsMode`, `xPaddingPlacement`, `xPaddingKey`, `xPaddingHeader`, `xPaddingMethod`.
+
+### Custom Metadata Placement (`sessionID*`, `seq*`, `uplinkData*`) {#xhttp-placement}
+
+- `sessionIDPlacement`, `sessionIDKey`, `sessionIDTable`, `sessionIDLength`, `seqPlacement`, `seqKey`, `uplinkDataPlacement`, `uplinkDataKey`.
+
+## Nginx Reverse Proxy Example {#xhttp-nginx} :orig[~:Nginx 推荐 grpc_pass | Nginx 反代配置]
+
+```nginx
+location /yourpath {
+    grpc_pass grpc://127.0.0.1:20000;
+    grpc_set_header Host $host;
+    grpc_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    client_max_body_size 0;
+}
+```
