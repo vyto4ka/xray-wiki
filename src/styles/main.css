@@ -465,23 +465,29 @@ code, .mono { font-family: var(--mono); font-size: 12.5px; }
 .prose hr { border: 0; border-top: 1px solid color-mix(in srgb, var(--outline-variant) 65%, transparent); margin: 26px 0; }
 
 .prose :not(pre) > code {
-  font: 12.5px/1.45 var(--mono);
-  background: var(--container-high);
-  border: 1px solid color-mix(in srgb, var(--outline-variant) 85%, transparent);
-  border-radius: 6px;
-  padding: 1px 5px;
-  color: #d6f1f0;
+  font-family: var(--mono);
+  font-size: 0.91em;
+  font-weight: 500;
+  color: #9de7e1;
+  background: none;
+  border: 0;
+  padding: 0;
   word-break: break-word;
+}
+.prose h2 code,
+.prose h3 code,
+.prose h4 code {
+  font-size: 0.94em;
+  font-weight: inherit;
+  color: var(--primary);
 }
 
 /* ---------- Аккуратная боковая кнопка-ссылка на первоисточник (:orig[...]) ---------- */
 .prose h2.has-orig,
 .prose h3.has-orig,
 .prose h4.has-orig {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  position: relative;
+  padding-right: 48px;
 }
 
 .prose p.has-orig {
@@ -537,14 +543,19 @@ code, .mono { font-family: var(--mono); font-size: 12.5px; }
   color: var(--on-surface-variant);
 }
 
-/* Позиционирование строго сбоку для пунктов списка и абзацев */
+/* Позиционирование строго сбоку для заголовков, пунктов списка и абзацев */
+.prose .orig-ref--heading {
+  position: absolute;
+  right: 0;
+  top: 4px;
+}
 .prose p.has-orig > .orig-ref--side {
   position: absolute;
   right: 0;
   top: 2px;
 }
 
-/* В режиме сверки (原) раскрываем китайский термин, оставляя его сбоку */
+/* В режиме сверки (原) раскрываем китайский термин, оставляя его аккуратно сбоку */
 html[data-orig-mode="expanded"] .orig-ref {
   opacity: 0.85;
   background: var(--container-low);
@@ -552,16 +563,25 @@ html[data-orig-mode="expanded"] .orig-ref {
   padding: 0 6px;
 }
 html[data-orig-mode="expanded"] .orig-ref__term { display: inline; }
+html[data-orig-mode="expanded"] .prose h2.has-orig,
+html[data-orig-mode="expanded"] .prose h3.has-orig,
+html[data-orig-mode="expanded"] .prose h4.has-orig {
+  padding-right: 0;
+}
+html[data-orig-mode="expanded"] .prose .orig-ref--heading {
+  position: static;
+  float: right;
+  margin-left: 12px;
+  margin-top: 4px;
+}
 html[data-orig-mode="expanded"] .prose p.has-orig {
   padding-right: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  column-gap: 6px;
 }
 html[data-orig-mode="expanded"] .prose p.has-orig > .orig-ref--side {
   position: static;
-  margin-left: auto;
+  float: right;
+  margin-left: 10px;
+  margin-top: 2px;
 }
 
 .orig-ref--cell { margin-left: 6px; float: right; }
