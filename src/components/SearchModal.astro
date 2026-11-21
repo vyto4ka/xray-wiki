@@ -1,0 +1,36 @@
+---
+import Icon from './Icon.astro';
+import { t, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const ui = t(lang);
+---
+
+<div class="modal-back" id="search-modal" hidden role="dialog" aria-modal="true" aria-label={ui.searchButton}>
+  <div class="modal">
+    <div class="search-head">
+      <Icon name="search" />
+      <input
+        id="search-input"
+        class="search-input"
+        type="search"
+        autocomplete="off"
+        placeholder={ui.searchPlaceholder}
+      />
+      <button type="button" class="btn ghost sm" id="search-close-btn">{ui.searchClose}</button>
+    </div>
+    <div
+      class="search-results"
+      id="search-results"
+      data-hint={ui.searchHint}
+      data-empty={ui.searchEmpty}
+      data-unavailable={ui.searchUnavailable}
+    >
+      <div class="search-state">{ui.searchHint}</div>
+    </div>
+  </div>
+</div>

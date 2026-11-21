@@ -1,0 +1,400 @@
+terms:
+  tcp:
+    zh: 传输控制协议
+    path: /fundamentals/tcp-udp-quic/#tcp
+    ru:
+      title: TCP
+      short: Надёжный потоковый транспорт с установкой соединения (3-way handshake), контролем порядка и переотправкой потерянных пакетов.
+    en:
+      title: TCP
+      short: Reliable stream-oriented transport with a 3-way handshake, ordered delivery, and retransmission of lost packets.
+
+  udp:
+    zh: 用户数据报协议
+    path: /fundamentals/tcp-udp-quic/#udp
+    ru:
+      title: UDP
+      short: Лёгкий транспорт без установки соединения и гарантии доставки. Используется в играх, звонках, DNS и как основа QUIC и WireGuard.
+    en:
+      title: UDP
+      short: Connectionless, lightweight datagram transport used for DNS, games, voice calls, and as the base for QUIC and WireGuard.
+
+  quic:
+    zh: QUIC 协议
+    path: /fundamentals/tcp-udp-quic/#quic
+    ru:
+      title: QUIC
+      short: "Современный зашифрованный транспорт поверх UDP (основа HTTP/3): без блокировки очереди между потоками и с миграцией при смене сети."
+    en:
+      title: QUIC
+      short: Modern encrypted transport over UDP (foundation of HTTP/3) with independent streams, 0-RTT, and connection migration.
+
+  rtt:
+    zh: 往返时延
+    path: /fundamentals/tcp-udp-quic/#rtt
+    ru:
+      title: RTT (Round-Trip Time)
+      short: Время, за которое пакет доходит от клиента до сервера и возвращается обратно. Чем меньше RTT на рукопожатие (0-RTT / 1-RTT), тем быстрее старт соединения.
+    en:
+      title: RTT (Round-Trip Time)
+      short: Time it takes for a packet to travel from client to server and back. Fewer round trips during handshake mean faster connection startup.
+
+  hol:
+    zh: 队头阻塞
+    path: /fundamentals/tcp-udp-quic/#hol-blocking
+    ru:
+      title: Head-of-Line Blocking
+      short: "Блокировка начала очереди: потеря одного TCP-пакета задерживает выдачу всех следующих потоков в том же соединении (включая HTTP/2)."
+    en:
+      title: Head-of-Line Blocking
+      short: Delay where a single lost TCP packet stalls delivery of all subsequent streams sharing that connection (including HTTP/2).
+
+  bbr:
+    zh: 拥塞控制算法
+    path: /fundamentals/tcp-udp-quic/#congestion-control
+    ru:
+      title: Congestion Control (BBR / Brutal)
+      short: Алгоритм управления скоростью отправки пакетов при потерях и задержках в сети. BBR оценивает пропускную способность канала, а Brutal держит заданный темп.
+    en:
+      title: Congestion Control (BBR / Brutal)
+      short: Algorithm regulating send rate under packet loss and latency. BBR models bottleneck bandwidth, while Brutal enforces a target rate.
+
+  cidr:
+    zh: 无类别域间路由
+    path: /fundamentals/network-layers/#ip-cidr
+    ru:
+      title: CIDR (подсеть)
+      short: Запись диапазона IP-адресов через косую черту, например 192.168.0.0/16 или 2001:db8::/32. Применяется в правилах маршрутизации и FakeDNS.
+    en:
+      title: CIDR (Subnet)
+      short: Compact notation for IP address ranges such as 192.168.0.0/16 or 2001:db8::/32, widely used in routing rules and FakeDNS pools.
+
+  mtu:
+    zh: 最大传输单元
+    path: /fundamentals/network-layers/#mtu-mss
+    ru:
+      title: MTU
+      short: Максимальный размер одного сетевого пакета в байтах без фрагментации (обычно 1500 для Ethernet, 1280–1420 для туннелей TUN, WireGuard и mKCP).
+    en:
+      title: MTU
+      short: Maximum Transmission Unit — largest single packet size in bytes without fragmentation (typically 1500 on Ethernet, 1280–1420 in tunnels).
+
+  uds:
+    zh: Unix 域套接字
+    path: /fundamentals/network-layers/#ports-sockets
+    ru:
+      title: Unix Domain Socket (UDS)
+      short: Локальный сокет внутри одной Linux-машины в виде файла (/run/xray.sock) или абстрактного имени (@name) — быстрее и безопаснее, чем loopback-порт.
+    en:
+      title: Unix Domain Socket (UDS)
+      short: Local inter-process socket on Linux addressed by a file path (/run/xray.sock) or abstract name (@name), faster than TCP loopback.
+
+  nat:
+    zh: 网络地址转换
+    path: /fundamentals/tcp-udp-quic/#nat-fullcone
+    ru:
+      title: NAT и FullCone
+      short: Подмена адресов и портов роутером. FullCone NAT сохраняет один внешний порт для разных адресатов — это критично для онлайн-игр, VoIP и P2P.
+    en:
+      title: NAT & FullCone
+      short: Address and port translation on routers. FullCone NAT reuses one external mapping for all peers, essential for gaming, VoIP, and P2P.
+
+  tls:
+    zh: 传输层安全协议
+    path: /fundamentals/tls-and-crypto/#tls13
+    ru:
+      title: TLS 1.3
+      short: Криптографический протокол, защищающий HTTPS и прокси-туннели. Обеспечивает шифрование трафика, проверку сервера и прямую секретность (PFS).
+    en:
+      title: TLS 1.3
+      short: Cryptographic protocol securing HTTPS and proxy tunnels, providing encryption, server authentication, and forward secrecy (PFS).
+
+  sni:
+    zh: 服务器名称指示
+    path: /fundamentals/tls-and-crypto/#sni
+    ru:
+      title: SNI (Server Name Indication)
+      short: Имя домена, которое клиент передаёт в TLS ClientHello до шифрования, чтобы сервер знал, какой сертификат вернуть. Главная цель проверки DPI.
+    en:
+      title: SNI (Server Name Indication)
+      short: Hostname sent in plaintext inside TLS ClientHello so the server picks the right certificate. Primary target of DPI inspection.
+
+  alpn:
+    zh: 应用层协议协商
+    path: /fundamentals/tls-and-crypto/#alpn
+    ru:
+      title: ALPN
+      short: "Расширение TLS, через которое клиент и сервер во время рукопожатия договариваются о протоколе внутри туннеля: h2 (HTTP/2), http/1.1 или h3."
+    en:
+      title: ALPN
+      short: TLS extension used during handshake to negotiate the inner application protocol such as h2 (HTTP/2), http/1.1, or h3.
+
+  ech:
+    zh: 加密客户端问候
+    path: /fundamentals/tls-and-crypto/#ech
+    ru:
+      title: ECH (Encrypted Client Hello)
+      short: Расширение TLS 1.3, шифрующее настоящий SNI внутри ClientHello с помощью публичного ключа из DNS HTTPS-записи.
+    en:
+      title: ECH (Encrypted Client Hello)
+      short: TLS 1.3 extension that encrypts the real SNI inside ClientHello using a public key published in DNS HTTPS records.
+
+  utls:
+    zh: uTLS 指纹模拟
+    path: /fundamentals/dpi-and-censorship/#utls-fingerprint
+    ru:
+      title: uTLS (отпечаток браузера)
+      short: Библиотека, имитирующая структуру TLS ClientHello реальных браузеров (Chrome, Firefox, Safari), чтобы скрыть характерный отпечаток Go TLS.
+    en:
+      title: uTLS (Browser Fingerprint)
+      short: Library that mimics real browser TLS ClientHello extensions and ordering (Chrome, Firefox, Safari) instead of Go's default TLS stack.
+
+  pfs:
+    zh: 前向保密
+    path: /fundamentals/tls-and-crypto/#key-exchange
+    ru:
+      title: Forward Secrecy (PFS)
+      short: "Прямая секретность: даже если злоумышленник позже получит приватный ключ сервера, он не сможет расшифровать ранее записанный трафик."
+    en:
+      title: Forward Secrecy (PFS)
+      short: Property ensuring past recorded traffic cannot be decrypted even if the server's long-term private key is compromised later.
+
+  aead:
+    zh: 认证加密
+    path: /fundamentals/tls-and-crypto/#aead
+    ru:
+      title: AEAD-шифрование
+      short: "Шифрование с проверкой целостности (AES-GCM, ChaCha20-Poly1305): защищает данные одновременно от чтения и от незаметной подмены байтов."
+    en:
+      title: AEAD Encryption
+      short: Authenticated Encryption with Associated Data (AES-GCM, ChaCha20-Poly1305), guaranteeing both confidentiality and integrity.
+
+  x25519:
+    zh: X25519 密钥交换
+    path: /fundamentals/tls-and-crypto/#key-exchange
+    ru:
+      title: X25519
+      short: Быстрый протокол обмена ключами на эллиптической кривой Curve25519. Используется в TLS 1.3, REALITY, WireGuard и VLESS Encryption.
+    en:
+      title: X25519
+      short: Fast Elliptic-Curve Diffie-Hellman key exchange over Curve25519, used in TLS 1.3, REALITY, WireGuard, and VLESS Encryption.
+
+  mlkem768:
+    zh: ML-KEM-768 后量子密钥交换
+    path: /fundamentals/tls-and-crypto/#post-quantum
+    ru:
+      title: ML-KEM-768
+      short: Постквантовый алгоритм инкапсуляции ключей (стандарт NIST). Применяется в VLESS Encryption вместе с X25519 для защиты от будущих квантовых компьютеров.
+    en:
+      title: ML-KEM-768
+      short: NIST-standardized post-quantum key encapsulation mechanism used alongside X25519 in VLESS Encryption.
+
+  mldsa65:
+    zh: ML-DSA-65 后量子签名
+    path: /fundamentals/tls-and-crypto/#post-quantum
+    ru:
+      title: ML-DSA-65
+      short: Постквантовый алгоритм цифровой подписи (стандарт NIST). В REALITY служит дополнительной защитой временного сертификата от подделки.
+    en:
+      title: ML-DSA-65
+      short: NIST-standardized post-quantum digital signature scheme used in REALITY to authenticate temporary server certificates.
+
+  ocsp:
+    zh: OCSP 装订
+    path: /fundamentals/tls-and-crypto/#pki-certs
+    ru:
+      title: OCSP Stapling
+      short: Механизм, при котором сервер сам прикладывает свежую подпись удостоверяющего центра о действительности сертификата прямо в TLS-рукопожатие.
+    en:
+      title: OCSP Stapling
+      short: Mechanism where the server attaches a fresh CA-signed certificate validity proof directly to the TLS handshake.
+
+  dns:
+    zh: 域名系统
+    path: /fundamentals/dns-and-fakedns/#how-dns-works
+    ru:
+      title: DNS
+      short: Служба преобразования доменных имён в IP-адреса. Неправильная настройка DNS приводит к утечке посещаемых доменов к провайдеру.
+    en:
+      title: DNS
+      short: Domain Name System translating hostnames to IP addresses. Misconfigured DNS leaks visited domains to the local ISP.
+
+  doh:
+    zh: 基于 HTTPS 的 DNS
+    path: /fundamentals/dns-and-fakedns/#encrypted-dns
+    ru:
+      title: DoH / DoT / DoQ
+      short: Шифрованные протоколы DNS поверх HTTPS, TLS или QUIC. Не дают провайдеру читать и подменять DNS-ответы.
+    en:
+      title: DoH / DoT / DoQ
+      short: Encrypted DNS transports over HTTPS, TLS, or QUIC that prevent ISP eavesdropping and DNS poisoning.
+
+  fakedns:
+    zh: 虚假 DNS
+    path: /fundamentals/dns-and-fakedns/#fakedns-concept
+    ru:
+      title: FakeDNS
+      short: Локальный DNS, выдающий мгновенный фиктивный IP из резервной подсети (198.18.0.0/15), чтобы Xray узнал настоящий домен без задержки на внешний запрос.
+    en:
+      title: FakeDNS
+      short: Local DNS returning synthetic IPs from a reserved pool (198.18.0.0/15) so Xray recovers the true domain name with zero lookup latency.
+
+  ecs:
+    zh: EDNS 客户端子网
+    path: /fundamentals/dns-and-fakedns/#ecs
+    ru:
+      title: EDNS Client Subnet (ECS)
+      short: Передача префикса клиентской подсети в DNS-запросе (поле clientIp), чтобы CDN возвращал географически ближайший сервер.
+    en:
+      title: EDNS Client Subnet (ECS)
+      short: Sending a client IP prefix inside DNS queries (clientIp) so CDNs return geographically optimal server addresses.
+
+  dpi:
+    zh: 深度包检测
+    path: /fundamentals/dpi-and-censorship/#passive-dpi
+    ru:
+      title: DPI (Deep Packet Inspection)
+      short: "Система глубокого анализа трафика (ТСПУ / GFW): проверяет SNI, отпечатки TLS, размеры первых пакетов, тайминги и статистическую энтропию потока."
+    en:
+      title: DPI (Deep Packet Inspection)
+      short: Traffic inspection systems that analyze SNI, TLS fingerprints, packet length distributions, timing, and payload entropy.
+
+  tls-in-tls:
+    zh: TLS 套 TLS 特征
+    path: /fundamentals/dpi-and-censorship/#tls-in-tls
+    ru:
+      title: TLS-in-TLS
+      short: "Демаскирующая сигнатура вложенного HTTPS внутри внешнего TLS-туннеля: характерные двойные рукопожатия и кратные размеры записей. Решается через XTLS Vision."
+    en:
+      title: TLS-in-TLS
+      short: Detectable pattern caused by tunneling inner TLS inside an outer TLS proxy connection. Solved by XTLS Vision.
+
+  active-probing:
+    zh: 主动探测
+    path: /fundamentals/dpi-and-censorship/#active-probing
+    ru:
+      title: Активное зондирование (Active Probing)
+      short: "Проверка подозрительного сервера цензором: он сам отправляет HTTP/TLS-запросы и смотрит, ведёт ли себя сервер как настоящий веб-сайт."
+    en:
+      title: Active Probing
+      short: Censorship technique where probes connect to a suspected proxy server to verify whether it behaves like a legitimate web server.
+
+  proxy-protocol:
+    zh: PROXY 协议
+    path: /fundamentals/http-and-cdn/#proxy-protocol
+    ru:
+      title: PROXY Protocol (v1 / v2)
+      short: Служебный заголовок HAProxy перед началом TCP-потока, передающий реальный IP и порт клиента от Nginx/HAProxy или Fallback к целевому сервису.
+    en:
+      title: PROXY Protocol (v1 / v2)
+      short: Small header prepended to a TCP stream (originally by HAProxy) to pass the original client IP and port through proxies and fallbacks.
+
+  cdn:
+    zh: 内容分发网络
+    path: /fundamentals/http-and-cdn/#cdn-mechanics
+    ru:
+      title: CDN (Cloudflare и др.)
+      short: Сеть краевых узлов (Anycast), принимающая трафик вместо вашего сервера и пересылающая его к источнику. Скрывает реальный IP сервера, но накладывает лимиты HTTP.
+    en:
+      title: CDN (Cloudflare, etc.)
+      short: Edge network that terminates client HTTP/TLS traffic and forwards it to your origin server, hiding the origin IP at the cost of HTTP constraints.
+
+  grpc:
+    zh: gRPC 协议
+    path: /fundamentals/http-and-cdn/#grpc-and-sse
+    ru:
+      title: gRPC
+      short: Протокол удалённого вызова процедур поверх HTTP/2 с бинарной сериализацией Protobuf. Поддерживает потоковую передачу и проходит через многие CDN.
+    en:
+      title: gRPC
+      short: Remote procedure call framework over HTTP/2 using Protobuf framing; supports bidirectional streaming and traverses many CDNs.
+
+  sse:
+    zh: 服务器推送事件
+    path: /fundamentals/http-and-cdn/#grpc-and-sse
+    ru:
+      title: SSE (Server-Sent Events)
+      short: Стандартный HTTP-механизм потоковой отправки данных от сервера клиенту (text/event-stream). Используется в XHTTP, чтобы прокси не буферизовали ответ.
+    en:
+      title: SSE (Server-Sent Events)
+      short: Standard HTTP streaming response format (text/event-stream) used by XHTTP to prevent reverse proxies from buffering downlink data.
+
+  tun:
+    zh: 虚拟网卡 TUN
+    path: /fundamentals/linux-networking/#tun-tproxy-redirect
+    ru:
+      title: TUN (виртуальный интерфейс)
+      short: "Виртуальная сетевая карта уровня IP (L3) в ОС: перехватывает весь трафик приложений без настройки прокси в каждой программе."
+    en:
+      title: TUN (Virtual Interface)
+      short: Layer-3 virtual network interface in the OS that captures all application IP packets without per-app proxy configuration.
+
+  tproxy:
+    zh: TPROXY 透明代理
+    path: /fundamentals/linux-networking/#tun-tproxy-redirect
+    ru:
+      title: TPROXY / REDIRECT
+      short: Механизмы ядра Linux (nftables/iptables) для прозрачного перехвата TCP и UDP на роутере без создания виртуального интерфейса TUN.
+    en:
+      title: TPROXY / REDIRECT
+      short: Linux kernel (nftables/iptables) mechanisms for transparent TCP and UDP interception on routers without TUN overhead.
+
+  fwmark:
+    zh: 防火墙标记 SO_MARK
+    path: /fundamentals/linux-networking/#fwmark
+    ru:
+      title: fwmark (SO_MARK)
+      short: Числовая метка на исходящих пакетах сокета в Linux (поле sockopt.mark). Позволяет обойти правила прозрачного прокси и избежать бесконечной петли трафика.
+    en:
+      title: fwmark (SO_MARK)
+      short: Integer tag attached to outbound sockets in Linux (sockopt.mark) so transparent proxy rules can bypass Xray's own traffic and prevent routing loops.
+
+  splice:
+    zh: 内核零拷贝 Splice
+    path: /fundamentals/linux-networking/#readv-splice
+    ru:
+      title: Linux splice() (Zero-Copy)
+      short: Системный вызов Linux, пересылающий данные напрямую между сокетами внутри ядра без копирования в память Xray. Включается автоматически в XTLS Vision.
+    en:
+      title: Linux splice() (Zero-Copy)
+      short: Linux syscall transferring bytes directly between sockets inside the kernel without copying into userspace. Enabled automatically by XTLS Vision.
+
+  readv:
+    zh: 向量化读取 ReadV
+    path: /fundamentals/linux-networking/#readv-splice
+    ru:
+      title: ReadV
+      short: Векторизованное чтение из сокета сразу в несколько буферов за один системный вызов, снижающее накладные расходы CPU в Xray-core.
+    en:
+      title: ReadV
+      short: Vectored socket read into multiple buffers in a single syscall, reducing CPU overhead in Xray-core.
+
+  xudp:
+    zh: XUDP 协议
+    path: /vless-reality/xtls-vision/#xudp
+    ru:
+      title: XUDP
+      short: Фирменный механизм Xray для передачи UDP поверх одного TCP-соединения с сохранением FullCone NAT через GlobalID.
+    en:
+      title: XUDP
+      short: Xray's native UDP-over-TCP multiplexing layer that preserves FullCone NAT behavior via GlobalID.
+
+  uuid:
+    zh: 通用唯一识别码
+    path: /vless-reality/vless/#vless-inbound
+    ru:
+      title: UUID (и UUIDv5)
+      short: 128-битный идентификатор пользователя в VLESS и VMess (например, 5783a3e7-e373-51cd-8642-c83782b807c5). В Xray любую строку до 30 байт можно автоматически отобразить в UUIDv5.
+    en:
+      title: UUID (and UUIDv5)
+      short: 128-bit user identifier in VLESS and VMess. Xray can deterministically map any custom string under 30 bytes to a valid UUIDv5.
+
+  socks:
+    zh: SOCKS 代理协议
+    path: /protocols/overview/#proxy-protocols
+    ru:
+      title: SOCKS5
+      short: Локальный сетевой прокси-протокол для перенаправления TCP- и UDP-трафика приложений в Xray-core без шифрования.
+    en:
+      title: SOCKS5
+      short: Local proxy protocol used by applications to forward TCP and UDP traffic into Xray-core without encryption.

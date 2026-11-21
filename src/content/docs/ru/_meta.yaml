@@ -1,0 +1,41 @@
+sections:
+  - id: fundamentals
+    title: Базовые понятия сети
+    icon: network
+    order: 1
+    description: TCP, UDP, QUIC, TLS, SNI, DNS, DPI, NAT и сетевой стек Linux простым и точным языком.
+  - id: getting-started
+    title: Знакомство с Xray
+    icon: rocket
+    order: 2
+    description: Архитектура Xray-core, структура config.json, многофайловые конфиги и все команды CLI.
+  - id: vless-reality
+    title: VLESS, XTLS и REALITY
+    icon: shield
+    order: 3
+    description: "Флагманский стек Xray: протокол VLESS, потоковый режим Vision, REALITY, Fallback и VLESS Encryption."
+  - id: transports
+    title: Транспорты и XHTTP
+    icon: layers
+    order: 4
+    description: StreamSettings, XHTTP (Beyond REALITY), XMUX, разделение вверх/вниз, RAW, WebSocket, gRPC, mKCP, Hysteria и MASQUE.
+  - id: security-socket
+    title: TLS, FinalMask и Sockopt
+    icon: lock
+    order: 5
+    description: Шифрование TLS и ECH, слой обфускации и QUIC-тюнинга FinalMask, системные опции сокетов Sockopt.
+  - id: core
+    title: Ядро, DNS и маршрутизация
+    icon: route
+    order: 6
+    description: Общие поля Inbound/Outbound, Sniffing, встроенный DNS, FakeDNS, правила маршрутизации, балансировщики и GeoData.
+  - id: protocols
+    title: Другие протоколы
+    icon: plug
+    order: 7
+    description: TUN, Tunnel, Freedom, Blackhole, Shadowsocks 2022, Trojan, VMess, WireGuard, Hysteria, MASQUE, SOCKS и HTTP.
+  - id: recipes
+    title: Ссылки vless:// и схемы
+    icon: book
+    order: 8
+    description: Полная расшифровка параметров ссылок vless:// и соответствие полям JSON-конфигурации.

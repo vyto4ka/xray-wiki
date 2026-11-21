@@ -1,0 +1,448 @@
+---
+import '../styles/main.css';
+import Sidebar from '../components/Sidebar.astro';
+import Topbar from '../components/Topbar.astro';
+import Toc, { type TocHeading } from '../components/Toc.astro';
+import SearchModal from '../components/SearchModal.astro';
+import { t, type Lang } from '../i18n/ui';
+import type { NavSection } from '../lib/docs';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  sections: NavSection[];
+  currentSlug?: string;
+  sectionTitle?: string;
+  pageTitle?: string;
+  originUrl?: string;
+  originTitle?: string;
+  headings?: TocHeading[];
+  showToc?: boolean;
+}
+
+const {
+  lang,
+  title,
+  description,
+  sections,
+  currentSlug = '',
+  sectionTitle,
+  pageTitle,
+  originUrl,
+  originTitle,
+  headings = [],
+  showToc = true,
+} = Astro.props;
+
+const ui = t(lang);
+const hasToc = showToc && headings.some((h) => h.depth >= 2 && h.depth <= 3);
+const pagefindUrl = withBase('/pagefind/pagefind.js');
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1e2125" />
+    <title>{title} · xray wiki</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline>
+      try {
+        if (localStorage.getItem('xraywiki.orig') === 'expanded') {
+          document.documentElement.dataset.origMode = 'expanded';
+        }
+      } catch {}
+    </script>
+  </head>
+  <body
+    data-copy-label={ui.copyCode}
+    data-copied-label={ui.copiedCode}
+    data-term-more={ui.termLinkReadMore}
+    data-pagefind-url={pagefindUrl}
+  >
+    <div class="app" id="wiki-app">
+      <Sidebar lang={lang} sections={sections} currentSlug={currentSlug} />
+      <div class="scrim" id="mobile-scrim"></div>
+
+      <div class="main">
+        <Topbar
+          lang={lang}
+          sectionTitle={sectionTitle}
+          pageTitle={pageTitle}
+          originUrl={originUrl}
+          originTitle={originTitle}
+        />
+
+        <div class={`workspace${hasToc ? '' : ' no-toc'}`}>
+          <main class="prose" data-pagefind-body>
+            <slot />
+          </main>
+          {hasToc && <Toc lang={lang} headings={headings} />}
+        </div>
+
+        <footer class="wiki-footer">
+          <span>{ui.footerLicense}</span>
+          <a href="https://github.com/vyto4ka/xray-wiki" target="_blank" rel="noopener noreferrer">
+            {ui.footerRepo} ↗
+          </a>
+        </footer>
+      </div>
+    </div>
+
+    <SearchModal lang={lang} />
+
+    <script is:inline>
+      (() => {
+        const app = document.getElementById('wiki-app');
+        if (!app) return;
+
+        // 1. Восстановление состояния сайдбара
+        try {
+          if (localStorage.getItem('xraywiki.sidebar') === 'collapsed') {
+            app.classList.add('collapsed');
+          }
+        } catch {}
+
+        const setCollapsed = (next) => {
+          app.classList.toggle('collapsed', next);
+          try {
+            localStorage.setItem('xraywiki.sidebar', next ? 'collapsed' : 'open');
+          } catch {}
+        };
+        document.getElementById('sidebar-collapse-btn')?.addEventListener('click', () => setCollapsed(true));
+        document.getElementById('sidebar-expand-btn')?.addEventListener('click', () => setCollapsed(false));
+
+        // Мобильное меню
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const scrim = document.getElementById('mobile-scrim');
+        mobileBtn?.addEventListener('click', () => app.classList.add('mobile-open'));
+        scrim?.addEventListener('click', () => app.classList.remove('mobile-open'));
+
+        // Сворачивание групп дерева
+        document.querySelectorAll('.nav-group-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const group = btn.closest('.nav-group');
+            if (!group) return;
+            const isOpen = group.classList.toggle('open');
+            btn.setAttribute('aria-expanded', String(isOpen));
+          });
+        });
+
+        // 2. Портальные тултипы свёрнутого сайдбара (как в vynel)
+        let railTipEl = null;
+        const hideRailTip = () => {
+          if (railTipEl) {
+            railTipEl.remove();
+            railTipEl = null;
+          }
+        };
+        document.querySelectorAll('[data-rail-tip]').forEach((el) => {
+          el.addEventListener('mouseenter', () => {
+            if (!app.classList.contains('collapsed')) return;
+            hideRailTip();
+            const label = el.getAttribute('data-rail-tip');
+            if (!label) return;
+            const r = el.getBoundingClientRect();
+            railTipEl = document.createElement('div');
+            railTipEl.className = 'side-tooltip';
+            railTipEl.textContent = label;
+            railTipEl.style.left = `${r.right + 10}px`;
+            railTipEl.style.top = `${r.top + r.height / 2}px`;
+            document.body.appendChild(railTipEl);
+          });
+          el.addEventListener('mouseleave', hideRailTip);
+          el.addEventListener('blur', hideRailTip);
+        });
+
+        // 3. Сохранение #hash при переключении языка RU | EN
+        document.querySelectorAll('[data-lang-switch]').forEach((link) => {
+          link.addEventListener('click', (e) => {
+            if (!window.location.hash) return;
+            e.preventDefault();
+            const baseHref = link.getAttribute('href') || '';
+            window.location.href = `${baseHref}${window.location.hash}`;
+          });
+        });
+
+        // 4. Переключатель режима сверки с оригиналом (原)
+        const origBtn = document.getElementById('orig-mode-btn');
+        const syncOrigBtn = () => {
+          const expanded = document.documentElement.dataset.origMode === 'expanded';
+          origBtn?.classList.toggle('active-toggle', expanded);
+          origBtn?.setAttribute('aria-pressed', String(expanded));
+        };
+        syncOrigBtn();
+        origBtn?.addEventListener('click', () => {
+          const next = document.documentElement.dataset.origMode !== 'expanded';
+          if (next) document.documentElement.dataset.origMode = 'expanded';
+          else delete document.documentElement.dataset.origMode;
+          try {
+            localStorage.setItem('xraywiki.orig', next ? 'expanded' : 'compact');
+          } catch {}
+          syncOrigBtn();
+        });
+
+        // 5. Обёртка таблиц в .table-scroll и блоков кода в .code-wrap + копирование
+        const copyLabel = document.body.dataset.copyLabel || 'Copy';
+        const copiedLabel = document.body.dataset.copiedLabel || 'Copied';
+
+        document.querySelectorAll('.prose table').forEach((table) => {
+          if (table.parentElement?.classList.contains('table-scroll')) return;
+          const wrap = document.createElement('div');
+          wrap.className = 'table-scroll';
+          table.parentNode?.insertBefore(wrap, table);
+          wrap.appendChild(table);
+        });
+
+        document.querySelectorAll('.prose pre').forEach((pre) => {
+          if (pre.parentElement?.classList.contains('code-wrap')) return;
+          const lang = pre.getAttribute('data-language') || 'text';
+          const wrap = document.createElement('div');
+          wrap.className = 'code-wrap';
+
+          const bar = document.createElement('div');
+          bar.className = 'code-bar';
+
+          const name = document.createElement('span');
+          name.className = 'code-lang';
+          name.textContent = lang;
+
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'code-copy';
+          btn.textContent = copyLabel;
+          btn.addEventListener('click', async () => {
+            const text = pre.innerText;
+            try {
+              await navigator.clipboard.writeText(text);
+              btn.textContent = copiedLabel;
+              btn.classList.add('done');
+              setTimeout(() => {
+                btn.textContent = copyLabel;
+                btn.classList.remove('done');
+              }, 1600);
+            } catch {}
+          });
+
+          bar.append(name, btn);
+          pre.parentNode?.insertBefore(wrap, pre);
+          wrap.append(bar, pre);
+        });
+
+        // 6. Поповер для сетевых терминов (:term[...])
+        const termMoreText = document.body.dataset.termMore || 'Read more';
+        let popEl = null;
+        let popTimer = null;
+
+        const closePop = () => {
+          if (popEl) {
+            popEl.remove();
+            popEl = null;
+          }
+        };
+
+        const openPop = (target) => {
+          if (popTimer) clearTimeout(popTimer);
+          closePop();
+
+          const title = target.getAttribute('data-term-title') || '';
+          const short = target.getAttribute('data-term-short') || '';
+          const zh = target.getAttribute('data-term-zh') || '';
+          const href = target.getAttribute('href') || '#';
+
+          popEl = document.createElement('div');
+          popEl.className = 'info-pop';
+          popEl.innerHTML =
+            `<div class="info-pop__head"><span class="info-pop__title"></span>${zh ? '<span class="info-pop__zh"></span>' : ''}</div>` +
+            `<p class="info-pop__body"></p>` +
+            `<a class="info-pop__link"></a>`;
+
+          popEl.querySelector('.info-pop__title').textContent = title;
+          if (zh) popEl.querySelector('.info-pop__zh').textContent = zh;
+          popEl.querySelector('.info-pop__body').textContent = short;
+          const link = popEl.querySelector('.info-pop__link');
+          link.textContent = `${termMoreText} →`;
+          link.setAttribute('href', href);
+
+          popEl.addEventListener('mouseenter', () => {
+            if (popTimer) clearTimeout(popTimer);
+          });
+          popEl.addEventListener('mouseleave', () => {
+            popTimer = setTimeout(closePop, 140);
+          });
+
+          document.body.appendChild(popEl);
+
+          const rect = target.getBoundingClientRect();
+          const popRect = popEl.getBoundingClientRect();
+          let left = rect.left;
+          if (left + popRect.width > window.innerWidth - 12) {
+            left = window.innerWidth - popRect.width - 12;
+          }
+          if (left < 12) left = 12;
+
+          let top = rect.bottom + 8;
+          if (top + popRect.height > window.innerHeight - 12) {
+            top = rect.top - popRect.height - 8;
+          }
+          if (top < 12) top = 12;
+
+          popEl.style.left = `${left}px`;
+          popEl.style.top = `${top}px`;
+        };
+
+        document.querySelectorAll('.term-link').forEach((link) => {
+          link.addEventListener('mouseenter', () => openPop(link));
+          link.addEventListener('focus', () => openPop(link));
+          link.addEventListener('mouseleave', () => {
+            popTimer = setTimeout(closePop, 180);
+          });
+          link.addEventListener('blur', () => {
+            popTimer = setTimeout(closePop, 180);
+          });
+        });
+        window.addEventListener('scroll', closePop, { passive: true });
+
+        // 7. Подсветка активного пункта оглавления (TOC)
+        const tocLinks = Array.from(document.querySelectorAll('[data-toc-link]'));
+        if (tocLinks.length > 0 && 'IntersectionObserver' in window) {
+          const headings = tocLinks
+            .map((a) => document.getElementById(a.getAttribute('data-toc-link') || ''))
+            .filter(Boolean);
+
+          const setActive = (id) => {
+            tocLinks.forEach((a) => {
+              a.classList.toggle('active', a.getAttribute('data-toc-link') === id);
+            });
+          };
+
+          const obs = new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) {
+                if (entry.isIntersecting) {
+                  setActive(entry.target.id);
+                  break;
+                }
+              }
+            },
+            { rootMargin: '-72px 0px -72% 0px', threshold: 0 },
+          );
+          headings.forEach((h) => obs.observe(h));
+        }
+
+        // 8. Модальное окно поиска Pagefind (Ctrl+K / '/')
+        const searchModal = document.getElementById('search-modal');
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
+        const openSearchBtn = document.getElementById('search-open-btn');
+        const closeSearchBtn = document.getElementById('search-close-btn');
+        let pagefindApi = null;
+        let pagefindFailed = false;
+
+        const openSearch = () => {
+          if (!searchModal) return;
+          searchModal.hidden = false;
+          searchInput?.focus();
+          searchInput?.select();
+        };
+        const closeSearch = () => {
+          if (!searchModal) return;
+          searchModal.hidden = true;
+        };
+
+        openSearchBtn?.addEventListener('click', openSearch);
+        closeSearchBtn?.addEventListener('click', closeSearch);
+        searchModal?.addEventListener('click', (e) => {
+          if (e.target === searchModal) closeSearch();
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            if (searchModal?.hidden) openSearch();
+            else closeSearch();
+          } else if (e.key === 'Escape' && searchModal && !searchModal.hidden) {
+            closeSearch();
+          } else if (
+            e.key === '/' &&
+            searchModal?.hidden &&
+            document.activeElement?.tagName !== 'INPUT' &&
+            document.activeElement?.tagName !== 'TEXTAREA'
+          ) {
+            e.preventDefault();
+            openSearch();
+          }
+        });
+
+        const loadPagefind = async () => {
+          if (pagefindApi || pagefindFailed) return pagefindApi;
+          try {
+            const url = document.body.dataset.pagefindUrl || '/pagefind/pagefind.js';
+            pagefindApi = await import(url);
+            await pagefindApi.init();
+            return pagefindApi;
+          } catch {
+            pagefindFailed = true;
+            return null;
+          }
+        };
+
+        let searchTimer = null;
+        searchInput?.addEventListener('input', () => {
+          if (searchTimer) clearTimeout(searchTimer);
+          const q = searchInput.value.trim();
+          if (!searchResults) return;
+          if (!q) {
+            searchResults.innerHTML = `<div class="search-state">${searchResults.dataset.hint || ''}</div>`;
+            return;
+          }
+          searchTimer = setTimeout(async () => {
+            const pf = await loadPagefind();
+            if (!pf) {
+              searchResults.innerHTML = `<div class="search-state">${searchResults.dataset.unavailable || ''}</div>`;
+              return;
+            }
+            const res = await pf.search(q);
+            const items = await Promise.all(res.results.slice(0, 10).map((r) => r.data()));
+            if (items.length === 0) {
+              searchResults.innerHTML = `<div class="search-state">${searchResults.dataset.empty || ''}</div>`;
+              return;
+            }
+            searchResults.innerHTML = items
+              .map((item) => {
+                const title = item.meta?.title || item.url;
+                const subs = (item.sub_results || [])
+                  .filter((s) => s.title && s.url !== item.url)
+                  .slice(0, 3)
+                  .map(
+                    (s) =>
+                      `<a class="search-sub" href="${s.url}"># ${s.title}</a>`,
+                  )
+                  .join('');
+                return (
+                  `<div class="search-item">` +
+                  `<a href="${item.url}" style="display:block;color:inherit;text-decoration:none">` +
+                  `<div class="search-item__title">${title}</div>` +
+                  `<div class="search-item__excerpt">${item.excerpt || ''}</div>` +
+                  `</a>` +
+                  (subs ? `<div class="search-subs">${subs}</div>` : '') +
+                  `</div>`
+                );
+              })
+              .join('');
+          }, 140);
+        });
+      })();
+    </script>
+  </body>
+</html>

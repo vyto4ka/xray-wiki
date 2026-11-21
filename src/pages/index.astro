@@ -1,0 +1,17 @@
+---
+import { withBase } from '../lib/paths';
+const target = withBase('/ru/');
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+    <link rel="canonical" href={target} />
+    <title>xray wiki</title>
+  </head>
+  <body style="background:#1e2125;color:#e6ecf0;font-family:system-ui,sans-serif;padding:24px">
+    <p>Переход на <a href={target} style="color:#48d1c7">{target}</a>...</p>
+  </body>
+</html>

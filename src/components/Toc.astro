@@ -1,0 +1,33 @@
+---
+import { t, type Lang } from '../i18n/ui';
+
+export interface TocHeading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  lang: Lang;
+  headings: TocHeading[];
+}
+
+const { lang, headings } = Astro.props;
+const ui = t(lang);
+const filtered = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{filtered.length > 0 && (
+  <aside class="toc" aria-label={ui.tocTitle}>
+    <p class="toc-title">{ui.tocTitle}</p>
+    <ul class="toc-list">
+      {filtered.map((h) => (
+        <li>
+          <a class={`toc-link depth-${h.depth}`} href={`#${h.slug}`} data-toc-link={h.slug}>
+            {h.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}

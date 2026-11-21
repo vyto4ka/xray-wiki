@@ -1,0 +1,102 @@
+---
+import WikiLayout from '../../layouts/WikiLayout.astro';
+import { t, type Lang } from '../../i18n/ui';
+import { getNavTree } from '../../lib/docs';
+import { getGlossaryList, termHref } from '../../lib/glossary';
+import { getBasePath, withBase } from '../../lib/paths';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ru' } }, { params: { lang: 'en' } }];
+}
+
+const lang = Astro.params.lang as Lang;
+const ui = t(lang);
+const sections = await getNavTree(lang);
+const glossary = getGlossaryList().slice(0, 18);
+const basePath = getBasePath();
+
+function articleCountLabel(n: number): string {
+  if (lang === 'en') return n === 1 ? '1 article' : `${n} articles`;
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return `${n} статья`;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return `${n} статьи`;
+  return `${n} статей`;
+}
+---
+
+<WikiLayout
+  lang={lang}
+  title={ui.homeTitle}
+  description={ui.tagline}
+  sections={sections}
+  showToc={false}
+>
+  <section class="hero">
+    <p class="eyebrow">{ui.homeHeroEyebrow}</p>
+    <h1>{ui.homeHeroTitle}</h1>
+    <p>{ui.homeHeroLead}</p>
+    <div class="hero-actions">
+      <a class="btn primary" href={withBase(`/${lang}/fundamentals/network-layers/`)}>{ui.homeCtaStart}</a>
+      <a class="btn" href={withBase(`/${lang}/vless-reality/vless/`)}>{ui.homeCtaVless}</a>
+      <a class="btn" href={withBase(`/${lang}/transports/xhttp/`)}>{ui.homeCtaXhttp}</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <p class="eyebrow" style="margin-bottom:4px">{ui.homePipelineTitle}</p>
+    <div class="routing-chain">
+      <a class="chain-node" href={withBase(`/${lang}/core/inbounds-outbounds/`)}>Inbound + Sniffing</a>
+      <span class="chain-arrow">→</span>
+      <a class="chain-node dim" href={withBase(`/${lang}/core/dns-fakedns/`)}>DNS / FakeDNS</a>
+      <span class="chain-arrow">→</span>
+      <a class="chain-node pink" href={withBase(`/${lang}/core/routing/`)}>Routing / Rules</a>
+      <span class="chain-arrow">→</span>
+      <a class="chain-node" href={withBase(`/${lang}/vless-reality/vless/`)}>Outbound (VLESS / Vision)</a>
+      <span class="chain-arrow">→</span>
+      <a class="chain-node" href={withBase(`/${lang}/transports/xhttp/`)}>Transport (RAW / XHTTP)</a>
+      <span class="chain-arrow">→</span>
+      <a class="chain-node pink" href={withBase(`/${lang}/vless-reality/reality/`)}>Security (REALITY / TLS)</a>
+      <span class="chain-arrow">→</span>
+      <a class="chain-node dim" href={withBase(`/${lang}/security-socket/finalmask-sockopt/`)}>FinalMask + Sockopt</a>
+    </div>
+  </section>
+
+  <h2 style="margin-top:28px">{ui.homeSectionsTitle}</h2>
+  <div class="cards-grid">
+    {sections.map((section) => {
+      const first = section.items[0];
+      return first && (
+        <a class="card card-link" href={withBase(`/${lang}/${first.slug}/`)}>
+          <h3>{section.title}</h3>
+          {section.description && <p>{section.description}</p>}
+          <span class="card-meta">{articleCountLabel(section.items.length)} →</span>
+        </a>
+      );
+    })}
+  </div>
+
+  <section class="card" style="margin-top:26px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <p class="eyebrow" style="margin:0">{ui.homeGlossaryTitle}</p>
+      <a href={withBase(`/${lang}/fundamentals/network-layers/`)} style="font-size:12.5px">
+        {ui.homeGlossaryAll} →
+      </a>
+    </div>
+    <div class="glossary-chips">
+      {glossary.map((term) => (
+        <a
+          class="glossary-chip term-link"
+          style="border-bottom:1px solid color-mix(in srgb, var(--outline-variant) 80%, transparent)"
+          href={termHref(term, lang, basePath)}
+          data-term-id={term.id}
+          data-term-title={term[lang].title}
+          data-term-short={term[lang].short}
+          data-term-zh={term.zh}
+        >
+          <span>{term[lang].title}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</WikiLayout>

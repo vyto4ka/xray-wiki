@@ -1,0 +1,101 @@
+---
+import { render } from 'astro:content';
+import WikiLayout from '../../layouts/WikiLayout.astro';
+import { ORIGINS, resolveOriginUrl } from '../../config/origins';
+import { t, type Lang } from '../../i18n/ui';
+import { flattenNav, getAllResolvedDocs, getNavTree, type ResolvedDoc } from '../../lib/docs';
+import { withBase } from '../../lib/paths';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const lang of ['ru', 'en'] as Lang[]) {
+    const docs = await getAllResolvedDocs(lang);
+    for (const doc of docs) {
+      paths.push({
+        params: { lang, slug: doc.slug },
+        props: { doc },
+      });
+    }
+  }
+  return paths;
+}
+
+interface Props {
+  doc: ResolvedDoc;
+}
+
+const lang = Astro.params.lang as Lang;
+const { doc } = Astro.props;
+const ui = t(lang);
+
+const sections = await getNavTree(lang);
+const flat = flattenNav(sections);
+const idx = flat.findIndex((item) => item.slug === doc.slug);
+const prev = idx > 0 ? flat[idx - 1] : null;
+const next = idx >= 0 && idx < flat.length - 1 ? flat[idx + 1] : null;
+const section = sections.find((s) => s.id === doc.sectionId);
+
+const { Content, headings } = await render(doc.entry);
+const originUrl = resolveOriginUrl('', doc.entry.data.origSource, doc.entry.data.origPath);
+const originSourceInfo = ORIGINS[doc.entry.data.origSource];
+---
+
+<WikiLayout
+  lang={lang}
+  title={doc.entry.data.title}
+  description={doc.entry.data.description}
+  sections={sections}
+  currentSlug={doc.slug}
+  sectionTitle={section?.title}
+  pageTitle={doc.entry.data.title}
+  originUrl={originUrl}
+  originTitle={doc.entry.data.origTitle || originSourceInfo.label}
+  headings={headings}
+>
+  {doc.isFallback && (
+    <div class="note warn" style="margin-top:0;margin-bottom:18px">
+      <div class="note-title">{ui.fallbackTitle}</div>
+      <div class="note-body"><p>{ui.fallbackText}</p></div>
+    </div>
+  )}
+
+  <header class="article-head">
+    <div class="article-eyebrow">
+      <p class="eyebrow">{section?.title || ui.homeTitle}</p>
+      <a
+        class="orig-ref"
+        href={originUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-orig-term={doc.entry.data.origTitle || originSourceInfo.label}
+        data-pagefind-index-attrs="data-orig-term"
+        title={doc.entry.data.origTitle ? `${ui.openOriginTitle}: ${doc.entry.data.origTitle}` : ui.openOriginTitle}
+      >
+        <span class="orig-ref__term">{doc.entry.data.origTitle || originSourceInfo.label}</span>
+        <span class="orig-ref__glyph">原</span>
+        <span class="orig-ref__arrow" aria-hidden="true">↗</span>
+      </a>
+    </div>
+    <h1>{doc.entry.data.title}</h1>
+    <p class="article-lead">{doc.entry.data.description}</p>
+  </header>
+
+  <Content />
+
+  {(prev || next) && (
+    <nav class="pager" aria-label="Pagination">
+      {prev ? (
+        <a class="pager-card" href={withBase(`/${lang}/${prev.slug}/`)}>
+          <span class="pager-dir">← {ui.prevPage}</span>
+          <span class="pager-title">{prev.title}</span>
+        </a>
+      ) : <div />}
+      {next ? (
+        <a class="pager-card next" href={withBase(`/${lang}/${next.slug}/`)}>
+          <span class="pager-dir">{ui.nextPage} →</span>
+          <span class="pager-title">{next.title}</span>
+        </a>
+      ) : <div />}
+    </nav>
+  )}
+</WikiLayout>

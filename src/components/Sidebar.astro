@@ -1,0 +1,138 @@
+---
+import Icon from './Icon.astro';
+import { LANGS, t, type Lang } from '../i18n/ui';
+import type { NavSection } from '../lib/docs';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  lang: Lang;
+  sections: NavSection[];
+  currentSlug?: string;
+}
+
+const { lang, sections, currentSlug = '' } = Astro.props;
+const ui = t(lang);
+
+function langUrl(targetLang: Lang): string {
+  return currentSlug
+    ? withBase(`/${targetLang}/${currentSlug}/`)
+    : withBase(`/${targetLang}/`);
+}
+
+const nextLang = lang === 'ru' ? 'en' : 'ru';
+
+function isGroupOpen(section: NavSection): boolean {
+  const hasActive = section.items.some((i) => i.slug === currentSlug);
+  return hasActive || !currentSlug || section.order <= 3;
+}
+---
+
+<aside class="sidebar" id="wiki-sidebar">
+  <a class="brand" href={withBase(`/${lang}/`)}>
+    <svg class="brand-logo" viewBox="0 0 96 96" role="img" aria-label="xray wiki">
+      <defs>
+        <linearGradient id="xw-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#39c5bb" />
+          <stop offset="1" stop-color="#ff5fa2" />
+        </linearGradient>
+      </defs>
+      <rect x="4" y="4" width="88" height="88" rx="24" fill="url(#xw-grad)" />
+      <path d="M31 31 L65 65 M65 31 L31 65" fill="none" stroke="#0d1013" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <div class="brand-name">{ui.siteName}<span>{ui.siteSuffix}</span></div>
+  </a>
+
+  <nav class="nav" aria-label="Wiki navigation">
+    {sections.map((section) => {
+      const defaultOpen = isGroupOpen(section);
+      return (
+        <div class={`nav-group${defaultOpen ? ' open' : ''}`} data-group-id={section.id}>
+          <button type="button" class="nav-group-btn" aria-expanded={defaultOpen ? 'true' : 'false'}>
+            <Icon name={section.icon} class="nav-ico" />
+            <span>{section.title}</span>
+            <Icon name="chevron" class="nav-chev" />
+          </button>
+          <div class="nav-group-items">
+            {section.items.map((item) => {
+              const isActive = item.slug === currentSlug;
+              return (
+                <a
+                  href={withBase(`/${lang}/${item.slug}/`)}
+                  class={`nav-item${isActive ? ' active' : ''}`}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <span>{item.title}</span>
+                  {item.badge && <span class="nav-item-badge">{item.badge}</span>}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      );
+    })}
+  </nav>
+
+  <div class="side-rail-links" aria-label="Quick section links">
+    {sections.map((section) => {
+      const first = section.items[0];
+      const isActive = section.items.some((i) => i.slug === currentSlug);
+      return first && (
+        <a
+          href={withBase(`/${lang}/${first.slug}/`)}
+          class={`rail-btn${isActive ? ' active' : ''}`}
+          data-rail-tip={section.title}
+          aria-label={section.title}
+        >
+          <Icon name={section.icon} />
+        </a>
+      );
+    })}
+  </div>
+
+  <div class="side-foot">
+    <div class="side-row side-expanded">
+      <div class="side-lang" role="group" aria-label={ui.languageSwitchTitle}>
+        {LANGS.map((l) => (
+          <a
+            href={langUrl(l.code)}
+            class={l.code === lang ? 'on' : ''}
+            data-lang-switch={l.code}
+            title={l.name}
+          >
+            {l.short}
+          </a>
+        ))}
+      </div>
+      <button
+        type="button"
+        class="btn ghost icon collapse-btn"
+        id="sidebar-collapse-btn"
+        title={ui.collapseSidebar}
+        aria-label={ui.collapseSidebar}
+      >
+        <Icon name="collapse" />
+      </button>
+    </div>
+
+    <div class="side-rail-foot">
+      <a
+        href={langUrl(nextLang)}
+        class="rail-btn"
+        data-lang-switch={nextLang}
+        data-rail-tip={`${ui.languageSwitchTitle}: ${nextLang.toUpperCase()}`}
+        aria-label={ui.languageSwitchTitle}
+      >
+        {lang.toUpperCase()}
+      </a>
+      <button
+        type="button"
+        class="rail-btn collapse-btn"
+        id="sidebar-expand-btn"
+        data-rail-tip={ui.expandSidebar}
+        aria-label={ui.expandSidebar}
+      >
+        <Icon name="expand" />
+      </button>
+    </div>
+  </div>
+</aside>

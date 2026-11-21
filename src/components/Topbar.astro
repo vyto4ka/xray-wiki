@@ -1,0 +1,75 @@
+---
+import Icon from './Icon.astro';
+import { t, type Lang } from '../i18n/ui';
+import { withBase } from '../lib/paths';
+
+interface Props {
+  lang: Lang;
+  sectionTitle?: string;
+  pageTitle?: string;
+  originUrl?: string;
+  originTitle?: string;
+}
+
+const { lang, sectionTitle, pageTitle, originUrl, originTitle } = Astro.props;
+const ui = t(lang);
+---
+
+<header class="topbar">
+  <button
+    type="button"
+    class="btn ghost icon burger"
+    id="mobile-menu-btn"
+    aria-label={ui.openMenu}
+  >
+    <Icon name="menu" />
+  </button>
+
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href={withBase(`/${lang}/`)}>{ui.homeTitle}</a>
+    {sectionTitle && (
+      <>
+        <span aria-hidden="true">/</span>
+        <span>{sectionTitle}</span>
+      </>
+    )}
+    {pageTitle && (
+      <>
+        <span aria-hidden="true">/</span>
+        <span class="crumb-cur">{pageTitle}</span>
+      </>
+    )}
+  </nav>
+
+  <div class="spacer"></div>
+
+  <button type="button" class="search-trigger" id="search-open-btn" aria-label={ui.searchButton}>
+    <Icon name="search" />
+    <span>{ui.searchButton}</span>
+    <kbd>Ctrl K</kbd>
+  </button>
+
+  <button
+    type="button"
+    class="btn sm"
+    id="orig-mode-btn"
+    title={ui.origModeTitle}
+    aria-pressed="false"
+  >
+    <span>原</span>
+    <span class="hide-xs">{ui.origModeLabel}</span>
+  </button>
+
+  {originUrl && (
+    <a
+      class="btn ghost sm"
+      href={originUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={originTitle ? `${ui.openOriginTitle}: ${originTitle}` : ui.openOriginTitle}
+    >
+      <Icon name="external" />
+      <span class="hide-xs">{ui.openOrigin}</span>
+    </a>
+  )}
+</header>
