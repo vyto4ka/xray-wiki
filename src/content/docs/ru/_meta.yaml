@@ -13,7 +13,7 @@ sections:
     title: VLESS, XTLS и REALITY
     icon: shield
     order: 3
-    description: "Флагманский стек Xray: протокол VLESS, потоковый режим Vision, REALITY, Fallback и VLESS Encryption."
+    description: "Основной стек Xray: протокол VLESS, потоковый режим Vision, REALITY, Fallback и VLESS Encryption."
   - id: transports
     title: Транспорты и XHTTP
     icon: layers

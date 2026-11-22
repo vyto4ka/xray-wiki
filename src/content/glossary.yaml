@@ -77,14 +77,14 @@ terms:
       short: Максимальный размер одного сетевого пакета в байтах без фрагментации (обычно 1500 для Ethernet, 1280–1420 для туннелей TUN, WireGuard и mKCP).
     en:
       title: MTU
-      short: Maximum Transmission Unit — largest single packet size in bytes without fragmentation (typically 1500 on Ethernet, 1280–1420 in tunnels).
+      short: "Maximum Transmission Unit: the largest single packet size in bytes without fragmentation (typically 1500 on Ethernet, 1280–1420 in tunnels)."
 
   uds:
     zh: Unix 域套接字
     path: /fundamentals/network-layers/#ports-sockets
     ru:
       title: Unix Domain Socket (UDS)
-      short: Локальный сокет внутри одной Linux-машины в виде файла (/run/xray.sock) или абстрактного имени (@name) — быстрее и безопаснее, чем loopback-порт.
+      short: Локальный сокет внутри одной Linux-машины в виде файла (/run/xray.sock) или абстрактного имени (@name), быстрее и безопаснее, чем loopback-порт.
     en:
       title: Unix Domain Socket (UDS)
       short: Local inter-process socket on Linux addressed by a file path (/run/xray.sock) or abstract name (@name), faster than TCP loopback.
@@ -94,7 +94,7 @@ terms:
     path: /fundamentals/tcp-udp-quic/#nat-fullcone
     ru:
       title: NAT и FullCone
-      short: Подмена адресов и портов роутером. FullCone NAT сохраняет один внешний порт для разных адресатов — это критично для онлайн-игр, VoIP и P2P.
+      short: Подмена адресов и портов роутером. FullCone NAT сохраняет один внешний порт для разных адресатов, что важно для онлайн-игр, VoIP и P2P.
     en:
       title: NAT & FullCone
       short: Address and port translation on routers. FullCone NAT reuses one external mapping for all peers, essential for gaming, VoIP, and P2P.
@@ -307,7 +307,7 @@ terms:
       short: Протокол удалённого вызова процедур поверх HTTP/2 с бинарной сериализацией Protobuf. Поддерживает потоковую передачу и проходит через многие CDN.
     en:
       title: gRPC
-      short: Remote procedure call framework over HTTP/2 using Protobuf framing; supports bidirectional streaming and traverses many CDNs.
+      short: Remote procedure call framework over HTTP/2 using Protobuf framing. Supports bidirectional streaming and traverses many CDNs.
 
   sse:
     zh: 服务器推送事件
@@ -414,7 +414,7 @@ terms:
     path: /fundamentals/glossary/#padding
     ru:
       title: Паддинг (Padding)
-      short: Добавление случайного объёма служебных «пустых» байтов к пакетам и заголовкам, чтобы скрыть их характерную длину от систем DPI.
+      short: 'Добавление случайного объёма служебных "пустых" байтов к пакетам и заголовкам, чтобы скрыть их характерную длину от систем DPI.'
     en:
       title: Padding
       short: Appending random dummy bytes to packets or headers to hide distinctive message lengths from DPI.
@@ -474,7 +474,7 @@ terms:
     path: /fundamentals/glossary/#entropy
     ru:
       title: Энтропия трафика
-      short: Мера статистической случайности байтов в потоке. Чисто случайный «белый шум» без обёртки TLS легко выделяется на фоне обычных протоколов.
+      short: 'Мера статистической случайности байтов в потоке. Чисто случайный "белый шум" без обёртки TLS легко выделяется на фоне обычных протоколов.'
     en:
       title: Traffic Entropy
       short: Statistical randomness of payload bytes. Raw high-entropy streams without a TLS wrapper stand out against structured web traffic.

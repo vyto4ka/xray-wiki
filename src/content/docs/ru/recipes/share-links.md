@@ -37,7 +37,7 @@ vless://<uuid>@<host>:<port>?type=raw&security=reality&encryption=none&flow=xtls
 
 | Параметр URI | Путь в `config.json` | Значение и пояснение |
 | :--- | :--- | :--- |
-| `fp` | `tlsSettings.fingerprint` / `realitySettings.fingerprint` | Отпечаток :term[utls] (`"chrome"` по умолчанию; обязателен для REALITY) |
+| `fp` | `tlsSettings.fingerprint` / `realitySettings.fingerprint` | Отпечаток :term[utls] (`"chrome"` по умолчанию, обязателен для REALITY) |
 | `sni` | `tlsSettings.serverName` / `realitySettings.serverName` | Домен :term[sni] |
 | `alpn` | `tlsSettings.alpn` | Список :term[alpn] через запятую без пробелов (`h2,http/1.1` или `h3`) |
 | `ech` | `tlsSettings.echConfigList` | Конфигурация :term[ech] |

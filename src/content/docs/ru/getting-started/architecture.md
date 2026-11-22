@@ -7,7 +7,7 @@ origPath: /config/
 origTitle: 配置文件
 ---
 
-**Xray-core** — универсальное модульное ядро для построения прокси-систем, развивающееся независимо от V2Ray. Один и тот же исполняемый файл (`xray`) работает и на **сервере**, и на **клиенте** — разница заключается только в содержимом конфигурационного файла.
+**Xray-core** — универсальное модульное ядро для построения прокси-систем, развивающееся независимо от V2Ray. Один и тот же исполняемый файл (`xray`) работает и на **сервере**, и на **клиенте**: разница только в содержимом конфигурационного файла.
 
 :::warning Примечание о версиях
 Официальная документация `xtls.github.io` всегда описывает самую свежую версию Xray-core (включая pre-release). Версия с пометкой `Latest` на GitHub иногда отстаёт, поэтому новые поля вроде `VLESS Encryption`, `FinalMask` или `version` требуют актуального ядра.
@@ -37,17 +37,17 @@ origTitle: 配置文件
 }
 ```
 
-- **`inbounds`** — массив входящих подключений (то, **откуда** Xray принимает трафик: локальный порт SOCKS/TUN на клиенте или порт `443` с VLESS+REALITY на сервере). :orig[/config/inbound.html | 入站代理]
-- **`outbounds`** — массив исходящих подключений (то, **куда** Xray отправляет трафик: на удалённый сервер, напрямую в интернет через `freedom` или в сброс `blackhole`). :orig[/config/outbound.html | 出站代理]
-- **`routing`** — правила маршрутизации и балансировщики, решающие, в какой `outbound` направить каждое соединение. :orig[/config/routing.html | 路由]
-- **`dns`** и **`fakedns`** — встроенный DNS-сервер с поддержкой :term[doh]{DoH/DoQ}, разделением доменов и :term[fakedns]{FakeDNS}. :orig[/config/dns.html | 内置 DNS 服务器]
-- **`policy`** — таймауты, размеры буферов и флаги сбора статистики по уровням пользователей (`level`). :orig[/config/policy.html | 本地策略]
-- **`log`** — настройка журналов `access`, `error`, уровня `loglevel` (`debug` / `info` / `warning` / `error` / `none`), `dnsLog` и маскирования клиентских IP (`maskAddress`: `quarter` | `half` | `full`). :orig[/config/log.html | 日志配置]
-- **`stats`**, **`api`** и **`metrics`** — подсчёт трафика, gRPC API управления на лету и экспорт метрик (`pprof`, `expvars`). :orig[/config/api.html | API 接口]
-- **`observatory`** и **`burstObservatory`** — фоновый и импульсный мониторинг задержки и доступности исходящих серверов. :orig[/config/observatory.html | 连接观测]
-- **`geodata`** — автоматическое обновление и горячая перезагрузка баз `geoip.dat` и `geosite.dat` по расписанию `cron`. :orig[/config/geodata.html | 地理数据文件]
-- **`env`** — переопределение встроенных переменных окружения прямо из конфига. :orig[/config/env.html | 环境变量]
-- **`version`** — ограничение допустимого диапазона версий ядра (`min`, `max` в формате `x.y.z`, доступно с `25.8.3`). :orig[~:version | 版本限制]
+- **`inbounds`**: массив входящих подключений (то, **откуда** Xray принимает трафик: локальный порт SOCKS/TUN на клиенте или порт `443` с VLESS+REALITY на сервере). :orig[/config/inbound.html | 入站代理]
+- **`outbounds`**: массив исходящих подключений (то, **куда** Xray отправляет трафик: на удалённый сервер, напрямую в интернет через `freedom` или в сброс `blackhole`). :orig[/config/outbound.html | 出站代理]
+- **`routing`**: правила маршрутизации и балансировщики, решающие, в какой `outbound` направить каждое соединение. :orig[/config/routing.html | 路由]
+- **`dns`** и **`fakedns`**: встроенный DNS-сервер с поддержкой :term[doh]{DoH/DoQ}, разделением доменов и :term[fakedns]{FakeDNS}. :orig[/config/dns.html | 内置 DNS 服务器]
+- **`policy`**: таймауты, размеры буферов и флаги сбора статистики по уровням пользователей (`level`). :orig[/config/policy.html | 本地策略]
+- **`log`**: настройка журналов `access`, `error`, уровня `loglevel` (`debug` / `info` / `warning` / `error` / `none`), `dnsLog` и маскирования клиентских IP (`maskAddress`: `quarter` | `half` | `full`). :orig[/config/log.html | 日志配置]
+- **`stats`**, **`api`** и **`metrics`**: подсчёт трафика, gRPC API управления на лету и экспорт метрик (`pprof`, `expvars`). :orig[/config/api.html | API 接口]
+- **`observatory`** и **`burstObservatory`**: фоновый и импульсный мониторинг задержки и доступности исходящих серверов. :orig[/config/observatory.html | 连接观测]
+- **`geodata`**: автоматическое обновление и горячая перезагрузка баз `geoip.dat` и `geosite.dat` по расписанию `cron`. :orig[/config/geodata.html | 地理数据文件]
+- **`env`**: переопределение встроенных переменных окружения прямо из конфига. :orig[/config/env.html | 环境变量]
+- **`version`**: ограничение допустимого диапазона версий ядра (`min`, `max` в формате `x.y.z`, доступно с `25.8.3`). :orig[~:version | 版本限制]
 
 ## Многофайловая конфигурация {#multiple-configs} :orig[/config/features/multiple.html | 多文件配置]
 

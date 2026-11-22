@@ -1,6 +1,6 @@
 ---
-title: Glossary of Terms
-description: Plain-language explanations of common networking and Xray-core jargon — multiplexing, padding, obfuscation, sniffing, fallback, entropy, and more.
+title: Glossary of terms
+description: "Plain-language explanations of common networking and Xray-core jargon: multiplexing, padding, obfuscation, sniffing, fallback, entropy, and more."
 order: 8
 badge: A–Z
 origSource: docs
@@ -8,7 +8,7 @@ origPath: /config/
 origTitle: 术语表
 ---
 
-Networking and proxy documentation uses many compact technical terms that describe straightforward mechanisms. This glossary explains the most common ones clearly.
+Networking and proxy docs rely on compact technical terms for straightforward mechanisms. Here are the ones you will run into most often.
 
 ## Multiplexing (Mux / XMUX) {#multiplexing}
 
@@ -38,26 +38,26 @@ Redirecting unauthenticated or unmatched connections to a legitimate web server 
 
 Intentionally splitting the initial TCP packet (usually TLS `ClientHello`) into small fragments with slight delays (`finalmask.tcp` `fragment`) to bypass simple stateless SNI filters.
 
-## Traffic Entropy {#entropy}
+## Traffic entropy {#entropy}
 
 A measure of byte randomness. Raw encrypted protocols without a TLS wrapper look like uniform random noise from byte zero and are easier for DPI to flag than structured TLS/HTTP traffic.
 
-## Domain Fronting {#domain-fronting}
+## Domain fronting {#domain-fronting}
 
 Using one CDN hostname in the plaintext TLS :term[sni] and a different hostname in the encrypted HTTP `Host` header.
 
-## MITM (Man-in-the-Middle) {#mitm}
+## MITM (man-in-the-middle) {#mitm}
 
 An active attacker positioned on the network path who intercepts and attempts to forge or inspect traffic using a substitute certificate. Mitigated by certificate pinning (`pinnedPeerCertSha256`), **REALITY**, and post-quantum :term[mldsa65].
 
-## Keep-Alive {#keepalive}
+## Keep-alive {#keepalive}
 
 Periodic lightweight probes sent over idle connections so NAT routers, firewalls, or CDNs do not drop them (`tcpKeepAliveIdle`, `hKeepAlivePeriod`, `heartbeatPeriod`).
 
-## Stateless Protocol {#stateless}
+## Stateless protocol {#stateless}
 
 A protocol (like **VLESS**) where every new connection carries all authentication metadata without requiring synchronized clocks or shared session state.
 
-## Proxy Chain (`dialerProxy`) {#cascade}
+## Proxy chain (`dialerProxy`) {#cascade}
 
 Tunneling one outbound through another (`streamSettings.sockopt.dialerProxy`) so traffic hops through a relay server before reaching the final exit node.

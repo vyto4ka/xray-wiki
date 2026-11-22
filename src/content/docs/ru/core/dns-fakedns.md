@@ -36,14 +36,14 @@ origTitle: 内置 DNS 服务器
 }
 ```
 
-- **`hosts`** — статическая таблица соответствий «домен → IP или другой домен» (срабатывает в первую очередь, до обращения к внешним серверам). :orig[~:hosts | hosts 静态映射]
-- **`servers[]`** — упорядоченный список DNS-серверов (строки или объекты `DnsServerObject`). :orig[#dnsserverobject | DnsServerObject]
-- **`queryStrategy`** — `"UseIP"` (A + AAAA), `"UseIPv4"`, `"UseIPv6"` или `"UseSystem"`. :orig[~:queryStrategy | queryStrategy]
-- **`clientIp`** — префикс :term[ecs]{EDNS Client Subnet} для более точного географического ответа CDN. :orig[~:clientIp | clientIp / ECS]
-- **`disableCache`** / **`serveStale`** / **`serveExpiredTTL`** — управление кэшем DNS и отдачей устаревшей записи из кэша с фоновым обновлением. :orig[~:serveStale | DNS 缓存]
-- **`disableFallback`** / **`disableFallbackIfMatch`** — запретить опрос резервных DNS-серверов, если основной не ответил или уже совпал по домену. :orig[~:disableFallback | disableFallback]
-- **`enableParallelQuery`** — опрашивать подходящие серверы параллельно. :orig[~:enableParallelQuery | 并行查询]
-- **`tag`** — метка `inboundTag`, с которой исходящие запросы самого встроенного DNS попадают в таблицу маршрутизации `routing.rules`. :orig[~:tag | DNS tag]
+- **`hosts`**: статическая таблица соответствий "домен → IP или другой домен" (срабатывает в первую очередь, до обращения к внешним серверам). :orig[~:hosts | hosts 静态映射]
+- **`servers[]`**: упорядоченный список DNS-серверов (строки или объекты `DnsServerObject`). :orig[#dnsserverobject | DnsServerObject]
+- **`queryStrategy`**: `"UseIP"` (A + AAAA), `"UseIPv4"`, `"UseIPv6"` или `"UseSystem"`. :orig[~:queryStrategy | queryStrategy]
+- **`clientIp`**: префикс :term[ecs]{EDNS Client Subnet} для более точного географического ответа CDN. :orig[~:clientIp | clientIp / ECS]
+- **`disableCache`** / **`serveStale`** / **`serveExpiredTTL`**: управление кэшем DNS и отдачей устаревшей записи из кэша с фоновым обновлением. :orig[~:serveStale | DNS 缓存]
+- **`disableFallback`** / **`disableFallbackIfMatch`**: запретить опрос резервных DNS-серверов, если основной не ответил или уже совпал по домену. :orig[~:disableFallback | disableFallback]
+- **`enableParallelQuery`**: опрашивать подходящие серверы параллельно. :orig[~:enableParallelQuery | 并行查询]
+- **`tag`**: метка `inboundTag`, с которой исходящие запросы самого встроенного DNS попадают в таблицу маршрутизации `routing.rules`. :orig[~:tag | DNS tag]
 
 ## Форматы адресов DNS-серверов (`address`) {#dns-transports} :orig[#dns-服务器 | DNS 服务器协议]
 
@@ -59,11 +59,11 @@ origTitle: 内置 DNS 服务器
 
 ## Поля DnsServerObject {#dns-server-object} :orig[#dnsserverobject | DnsServerObject]
 
-- **`domains[]`** — список доменов (`geosite:`, `domain:`, `full:`, `regexp:`), которые должен обслуживать именно этот сервер.
-- **`expectedIPs[]` / `unexpectedIPs[]`** — фильтр ответов по :term[cidr] / `geoip:`: если сервер вернул неожиданный IP (например, страницу-заглушку провайдера), Xray отбросит ответ и спросит следующий сервер.
-- **`skipFallback`** (`bool`) — не использовать этот сервер при откате (fallback), только при прямом совпадении `domains`.
-- **`timeoutMs`** — таймаут ожидания ответа в миллисекундах (по умолчанию `4000`).
-- **`finalQuery`** (`bool`) — не передавать запрос дальше по цепочке, даже если этот сервер вернул пустой ответ.
+- **`domains[]`**: список доменов (`geosite:`, `domain:`, `full:`, `regexp:`), которые должен обслуживать именно этот сервер.
+- **`expectedIPs[]` / `unexpectedIPs[]`**: фильтр ответов по :term[cidr] или `geoip:`. Если сервер вернул неожиданный IP (например, страницу-заглушку провайдера), Xray отбросит ответ и спросит следующий сервер.
+- **`skipFallback`** (`bool`): не использовать этот сервер при откате (fallback), только при прямом совпадении `domains`.
+- **`timeoutMs`**: таймаут ожидания ответа в миллисекундах (по умолчанию `4000`).
+- **`finalQuery`** (`bool`): не передавать запрос дальше по цепочке, даже если этот сервер вернул пустой ответ.
 
 ## Настройка FakeDNS (`fakedns`) {#fakedns-config} :orig[/config/fakedns.html#fakednsobject | FakeDNSObject]
 
@@ -74,6 +74,6 @@ origTitle: 内置 DNS 服务器
 ]
 ```
 
-- **`ipPool`** — подсеть :term[cidr], из которой выдаются фиктивные адреса.
-- **`poolSize`** — максимальное количество одновременно хранимых пар «домен ↔ фиктивный IP» (LRU-кэш).
+- **`ipPool`**: подсеть :term[cidr], из которой выдаются фиктивные адреса.
+- **`poolSize`**: максимальное количество одновременно хранимых пар "домен ↔ фиктивный IP" (LRU-кэш).
 - Для работы в `dns.servers` добавляется `"fakedns"`, а на принимающем `inbound` (например, `tun` или `tunnel`) включается `sniffing.destOverride: ["fakedns"]`.

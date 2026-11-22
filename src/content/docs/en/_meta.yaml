@@ -1,11 +1,11 @@
 sections:
   - id: fundamentals
-    title: Networking Basics
+    title: Networking basics
     icon: network
     order: 1
     description: Clear explanations of TCP, UDP, QUIC, TLS, SNI, DNS, DPI, NAT, and Linux kernel networking.
   - id: getting-started
-    title: Getting Started
+    title: Getting started
     icon: rocket
     order: 2
     description: Xray-core architecture, config.json structure, multi-file configs, and CLI commands.
@@ -25,17 +25,17 @@ sections:
     order: 5
     description: TLS & ECH settings, FinalMask obfuscation and QUIC tuning, and low-level socket options.
   - id: core
-    title: Core, DNS & Routing
+    title: Core, DNS & routing
     icon: route
     order: 6
     description: Inbound/Outbound base fields, Sniffing, built-in DNS, FakeDNS, routing rules, balancers, and GeoData.
   - id: protocols
-    title: Other Protocols
+    title: Other protocols
     icon: plug
     order: 7
     description: TUN, Tunnel, Freedom, Blackhole, Shadowsocks 2022, Trojan, VMess, WireGuard, Hysteria, MASQUE, SOCKS, and HTTP.
   - id: recipes
-    title: vless:// Links & Guides
+    title: vless:// links & guides
     icon: book
     order: 8
     description: Complete breakdown of vless:// share URI parameters and their JSON config equivalents.
